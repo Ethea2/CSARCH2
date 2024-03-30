@@ -74,8 +74,26 @@ function normalize(mantissa, exponent) {
 }
 
 function denselyPackedBCD(digits) {
-    // Implement the densely packed BCD conversion here
-    // This is a placeholder and needs to be implemented
+    // Convert the string of digits into an array of individual numbers
+    let digitArray = digits.split('').map(Number);
+
+    // Check if the number of digits is a multiple of 3
+    if (digitArray.length % 3 !== 0) {
+        throw new Error('The number of digits must be a multiple of 3.');
+    }
+
+    // Process each group of 3 digits
+    let bcdArray = [];
+    for (let i = 0; i < digitArray.length; i += 3) {
+        // Convert each group of 3 digits to BCD
+        let bcd = (digitArray[i] << 8) | (digitArray[i + 1] << 4) | digitArray[i + 2];
+        bcdArray.push(bcd);
+    }
+
+    // Combine the BCD values into a single densely packed BCD
+    let denselyPackedBCD = bcdArray.reduce((acc, bcd) => (acc << 12) | bcd, 0);
+
+    return denselyPackedBCD;
 }
 
 function pad(num, size) {
