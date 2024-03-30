@@ -3,9 +3,40 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 
 function App() {
-  const [normalized, setNormalized] = useState("");
+  const [input, setInput] = useState("");
   const [exponent, setExponent] = useState("");
-  const [base, setBase] = useState(10);
+  const [base, setBase] = useState("10");
+  const [error, setError] = useState("");
+
+  const convert = () => {
+    try {
+      if (input === "" || exponent === "") {
+        setError("Input and exponent cannot be empty.");
+      }
+
+      if (base === "2") {
+        if (!/^[01]+$/.test(input)) {
+          setError(
+            "Invalid input. Input should only contain 0s and 1s for base 2.",
+          );
+        }
+      } else if (base === "10") {
+        const decimal = parseFloat(input);
+        if (isNaN(decimal)) {
+          setError(
+            "Invalid input. Input should be a valid decimal for base 10.",
+          );
+        }
+      }
+
+      const parsedExponent = parseInt(exponent, 10);
+      if (isNaN(parsedExponent)) {
+        setError("Invalid exponent. Exponent should be a valid integer.");
+      }
+    } catch (e) {
+      console.error(e.message);
+    }
+  };
 
   return (
     <>
@@ -16,16 +47,16 @@ function App() {
             <input
               type="text"
               className="w-1/3 border-2 border-teal-300 bg-black rounded-lg p-2"
-              onChange={(e) => setNormalized(e.target.value)}
+              onChange={(e) => setInput(e.target.value)}
             />
             x
             <select
-              defaultValue={10}
+              defaultValue={"10"}
               className="w-[10%] border-2 border-teal-300 bg-black rounded-lg p-2"
               onChange={(e) => setBase(e.target.value)}
             >
-              <option value={10}>10</option>
-              <option value={2}>2</option>
+              <option value={"10"}>10</option>
+              <option value={"2"}>2</option>
             </select>
             ^
             <input
@@ -35,11 +66,7 @@ function App() {
             />
             <button
               className="bg-black text-teal-300 border-2 border-teal-300 p-2 rounded-lg transition ease-in duration-300 hover:scale-110"
-              onClick={() => {
-                console.log(`normalized: ${normalized}`);
-                console.log(`base: ${base}`);
-                console.log(`exponent: ${exponent}`);
-              }}
+              onClick={() => convert()}
             >
               Convert!
             </button>
@@ -49,6 +76,7 @@ function App() {
             <textarea className="w-full h-full resize-none bg-black text-teal-300" />
           </div>
         </div>
+        {error === "" ? "" : <p className="text-red-300 font-bold">{error}</p>}
       </main>
     </>
   );
