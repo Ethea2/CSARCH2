@@ -1,45 +1,56 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useEffect, useState } from "react";
+import ConvertButton from "./components/ConvertButton";
+import { convertBase10, convertBase2 } from "./helpers/converter";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [input, setInput] = useState("");
   const [exponent, setExponent] = useState("");
   const [base, setBase] = useState("10");
   const [error, setError] = useState("");
+  const [answer, setAnswer] = useState();
 
   const convert = () => {
+    if (exponent === "" || input === "")
+      return setError("Please fill the whole form.");
+    if (parseFloat(input) === NaN || parseFloat(exponent) === NaN)
+      return setError("Please enter integers or decimal only.");
+
     try {
-      if (input === "" || exponent === "") {
-        setError("Input and exponent cannot be empty.");
+      if (base === "10") {
+        setAnswer(convertBase10(input, exponent));
+        return;
       }
-
-      if (base === "2") {
-        if (!/^[01]+$/.test(input)) {
-          setError(
-            "Invalid input. Input should only contain 0s and 1s for base 2.",
-          );
-        }
-      } else if (base === "10") {
-        const decimal = parseFloat(input);
-        if (isNaN(decimal)) {
-          setError(
-            "Invalid input. Input should be a valid decimal for base 10.",
-          );
-        }
-      }
-
-      const parsedExponent = parseInt(exponent, 10);
-      if (isNaN(parsedExponent)) {
-        setError("Invalid exponent. Exponent should be a valid integer.");
-      }
+      setAnswer(convertBase2(input, exponent));
     } catch (e) {
-      console.error(e.message);
+      setError(e.message);
     }
   };
 
+  useEffect(() => {
+    if (error !== "") {
+      toast(error, {
+        type: "error",
+      });
+      setError("");
+    }
+  }, [error]);
+
   return (
     <>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <main className="w-full h-screen flex flex-col justify-center items-center bg-black text-white">
         <div className="w-1/2 h-1/2 flex flex-col  items-center border-2">
           <div className="w-full h-[50%] flex justify-center items-center gap-2">
@@ -64,16 +75,41 @@ function App() {
               className="w-[10%] border-2 bg-black rounded-lg border-teal-300 p-2"
               onChange={(e) => setExponent(e.target.value)}
             />
-            <button
-              className="bg-black text-teal-300 border-2 border-teal-300 p-2 rounded-lg transition ease-in duration-300 hover:scale-110"
-              onClick={() => convert()}
-            >
-              Convert!
-            </button>
+            <ConvertButton convert={convert}>Convert!</ConvertButton>
           </div>
           <div className="w-full h-full flex flex-col justify-center items-center">
-            output:
-            <textarea className="w-full h-full resize-none bg-black text-teal-300" />
+            <div className="text-teal-300">
+              <p>
+                Sign bit:{" "}
+                <span className="font-bold">
+                  {answer && answer.binAnswer.signBit}
+                </span>
+              </p>
+              <p>
+                Exponent:{" "}
+                <span className="font-bold">
+                  {answer && answer.binAnswer.exponent}
+                </span>
+              </p>
+              <p>
+                Mantissa:{" "}
+                <span className="font-bold">
+                  {answer && answer.binAnswer.mantissa}
+                </span>
+              </p>
+              <p>
+                Hex: <span className="font-bold">{answer && answer.hex}</span>
+              </p>
+              <p>
+                Full binary:{" "}
+                <span className="font-bold">
+                  {answer &&
+                    answer.binAnswer.signBit +
+                      answer.binAnswer.exponent +
+                      answer.binAnswer.mantissa}
+                </span>
+              </p>
+            </div>
           </div>
         </div>
         {error === "" ? "" : <p className="text-red-300 font-bold">{error}</p>}
