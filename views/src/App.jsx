@@ -14,7 +14,7 @@ function App() {
   const convert = () => {
     if (exponent === "" || input === "")
       return setError("Please fill the whole form.");
-    if (parseFloat(input) === NaN || parseFloat(exponent) === NaN)
+    if (!parseFloat(input) || !parseFloat(exponent))
       return setError("Please enter integers or decimal only.");
 
     try {
