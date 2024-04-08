@@ -9,17 +9,38 @@ export const convertBase2 = (mantissa, exponent) => {
 
   // Check if mantissa and exponent are 0
   if (parsedMantissa === 0 && parseFloat(exponent) === 0) {
-    return { binAnswer: { signBit, exponent: '00000000', mantissa: '00000000000000000000000' }, hex: signBit === 0 ? '00000000' : '80000000' };
+    return {
+      binAnswer: {
+        signBit,
+        exponent: "00000000",
+        mantissa: "00000000000000000000000",
+      },
+      hex: signBit === 0 ? "00000000" : "80000000",
+    };
   }
 
   // Check if mantissa is 0 and exponent is 255
   if (parsedMantissa === 0 && parseFloat(exponent) === 255) {
-    return { binAnswer: { signBit, exponent: '11111111', mantissa: '00000000000000000000000' }, hex: signBit === 0 ? '7F800000' : 'FF800000' };
+    return {
+      binAnswer: {
+        signBit,
+        exponent: "11111111",
+        mantissa: "00000000000000000000000",
+      },
+      hex: signBit === 0 ? "7F800000" : "FF800000",
+    };
   }
 
   // Check if exponent is 255 and mantissa is non-zero
   if (parseFloat(exponent) === 255 && parsedMantissa !== 0) {
-    return { binAnswer: { signBit, exponent: '11111111', mantissa: '10000000000000000000000' }, hex: '7FC00000' };
+    return {
+      binAnswer: {
+        signBit,
+        exponent: "11111111",
+        mantissa: "10000000000000000000000",
+      },
+      hex: "7FC00000",
+    };
   }
 
   const normalized = normalize(noSignMantissa, parseFloat(exponent));
@@ -39,6 +60,42 @@ export const convertBase10 = (mantissa, exponent) => {
     signBit = 1;
     mant = mant.slice(1);
   }
+
+  // Check if mantissa and exponent are 0
+  if (parseFloat(mantissa) === 0 && parseFloat(exponent) === 0) {
+    return {
+      binAnswer: {
+        signBit,
+        exponent: "00000000",
+        mantissa: "00000000000000000000000",
+      },
+      hex: signBit === 0 ? "00000000" : "80000000",
+    };
+  }
+
+  // Check if mantissa is 0 and exponent is 255
+  if (parseFloat(mantissa) === 0 && parseFloat(exponent) === 255) {
+    return {
+      binAnswer: {
+        signBit,
+        exponent: "11111111",
+        mantissa: "00000000000000000000000",
+      },
+      hex: signBit === 0 ? "7F800000" : "FF800000",
+    };
+  }
+
+  // Check if exponent is 255 and mantissa is non-zero
+  if (parseFloat(exponent) === 255 && parseFloat(mantissa) !== 0) {
+    return {
+      binAnswer: {
+        signBit,
+        exponent: "11111111",
+        mantissa: "10000000000000000000000",
+      },
+      hex: "7FC00000",
+    };
+  }
   const normalized = normalize(mant, parseFloat(exponent));
   const e = normalized.exponent + 127;
   const bin_e = convertExponent(e);
@@ -48,21 +105,6 @@ export const convertBase10 = (mantissa, exponent) => {
 
   return { binAnswer: { signBit, exponent: bin_e, mantissa: bins }, hex };
 };
-
-// Check if mantissa and exponent are 0
-if (parseFloat(mantissa) === 0 && parseFloat(exponent) === 0) {
-  return { binAnswer: { signBit, exponent: '00000000', mantissa: '00000000000000000000000' }, hex: signBit === 0 ? '00000000' : '80000000' };
-}
-
-// Check if mantissa is 0 and exponent is 255
-if (parseFloat(mantissa) === 0 && parseFloat(exponent) === 255) {
-  return { binAnswer: { signBit, exponent: '11111111', mantissa: '00000000000000000000000' }, hex: signBit === 0 ? '7F800000' : 'FF800000' };
-}
-
-// Check if exponent is 255 and mantissa is non-zero
-if (parseFloat(exponent) === 255 && parseFloat(mantissa) !== 0) {
-  return { binAnswer: { signBit, exponent: '11111111', mantissa: '10000000000000000000000' }, hex: '7FC00000' };
-}
 
 const normalize = (mant, exponent) => {
   let mantissa = parseFloat(mant);
