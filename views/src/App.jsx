@@ -28,6 +28,17 @@ function App() {
     }
   };
 
+  const download = () => {
+    const file = JSON.stringify(answer, null, 4);
+    const blob = new Blob([file], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.download = "converted binary-32 bit answer.txt";
+    link.href = url;
+    link.click();
+  };
+
   useEffect(() => {
     if (error !== "") {
       toast(error, {
@@ -104,12 +115,13 @@ function App() {
                 Full binary:{" "}
                 <span className="font-bold">
                   {answer &&
-                    answer.binAnswer.signBit +
-                      answer.binAnswer.exponent +
-                      answer.binAnswer.mantissa}
+                    `${answer.binAnswer.signBit} ${answer.binAnswer.exponent} ${answer.binAnswer.mantissa}`}
                 </span>
               </p>
             </div>
+            {answer && (
+              <ConvertButton convert={download}>Download Answer!</ConvertButton>
+            )}
           </div>
         </div>
         {error === "" ? "" : <p className="text-red-300 font-bold">{error}</p>}
